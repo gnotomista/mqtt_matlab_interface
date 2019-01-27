@@ -29,7 +29,7 @@ classdef MqttInterface < handle
             err_flag = false;
             err = '';
             try
-                recv_msg = char(obj.imqtt.getMessage(topic));
+                recv_msg = obj.imqtt.getMessage(topic);
             catch e
                 err_flag = true;
                 err = e.message;

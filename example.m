@@ -19,8 +19,6 @@ while true
     % receive a message from sub_topic
     sub_topic_msg_1 = mqttinterface.receive(sub_topic_1);
     sub_topic_msg_2 = mqttinterface.receive(sub_topic_2);
-    disp(['received msg: ', sub_topic_msg_1, ' from ', sub_topic_1])
-    disp(['received msg: ', sub_topic_msg_2, ' from ', sub_topic_2])
     
     % publish a message to pub_topic
     mqttinterface.send('pub_topic_1', 'pub_msg_1', 1); % set qos=1
