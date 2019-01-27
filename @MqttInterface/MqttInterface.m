@@ -3,56 +3,59 @@ classdef MqttInterface < handle
         client_id
         ip
         port
-        publisher
-        subscribers
-        pub_topics
-        sub_topics
+        imqtt
     end
-    
+
     methods
-        function obj = MqttInterface(client_id, ip, port)
-            obj.pub_topics = {};
-            obj.sub_topics = {};
-            obj.subscribers = containers.Map;
-            
+        function obj = MqttInterface(client_id, ip, port, max_inflight)
             obj.client_id = client_id;
             obj.ip = ip;
             obj.port = port;
-            
-            persistence = org.eclipse.paho.client.mqttv3.persist.MemoryPersistence();
-            obj.publisher = org.eclipse.paho.client.mqttv3.MqttClient(['tcp://',obj.ip,':',num2str(obj.port)], [obj.client_id,'_pub'], persistence);
+
+            if nargin < 4
+                obj.imqtt = iMqttClient(obj.client_id, obj.ip, num2str(obj.port));
+            else
+                obj.imqtt = iMqttClient(obj.client_id, obj.ip, num2str(obj.port), max_inflight);
+            end
         end
-        function connect(obj)
-            connOpts = org.eclipse.paho.client.mqttv3.MqttConnectOptions();
-            connOpts.setCleanSession(true);
-            obj.publisher.connect(connOpts);
+        function subscribe(obj, topic, qos)
+            if nargin < 3
+                qos = 0;
+            end
+            obj.imqtt.subscribe(topic, qos);
         end
-        function add_publisher(obj, pub_topic)
-            obj.pub_topics{end+1} = pub_topic;
-        end
-        function add_subscriber(obj, sub_topic)
-            obj.subscribers(sub_topic) = Subscriber([obj.client_id,'_',sub_topic,'_sub'], obj.ip, num2str(obj.port), sub_topic);
-            obj.sub_topics{end+1} = sub_topic;
-        end
-        function [recv_msg, err_flag, err] = receive(obj, sub_topic)
+        function [recv_msg, err_flag, err] = receive(obj, topic)
             recv_msg = [];
             err_flag = false;
             err = '';
             try
-                recv_msg = jsondecode(char(obj.subscribers(sub_topic).mqtt_message));
+                recv_msg = char(obj.imqtt.getMessage(topic));
             catch e
                 err_flag = true;
                 err = e.message;
             end
         end
-        function [err_flag, err] = send(obj, pub_topic, msg)
+        function [recv_msg, err_flag, err] = receive_json(obj, topic)
+            recv_msg = [];
             err_flag = false;
             err = '';
             try
-                S = jsonencode(msg);
-                send_msg = org.eclipse.paho.client.mqttv3.MqttMessage(uint8(S));
-                send_msg.setQos(0);
-                obj.publisher.publish(pub_topic, send_msg);
+                recv_msg = jsondecode(char(obj.imqtt.getMessage(topic)));
+            catch e
+                err_flag = true;
+                err = e.message;
+            end
+        end
+        function [err_flag, err] = send(obj, topic, msg, qos)
+            err_flag = false;
+            err = '';
+            try
+                s = jsonencode(msg);
+                if nargin < 4
+                    obj.imqtt.sendMessage(topic, s)
+                else
+                    obj.imqtt.sendMessage(topic, s, qos)
+                end
             catch e
                 err_flag = false;
                 err = e.message;

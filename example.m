@@ -2,26 +2,29 @@ clc
 clear java
 close all
 javaaddpath('jars/org.eclipse.paho.client.mqttv3-1.2.0.jar')
-javaaddpath('jars/Subscriber.jar')
+javaaddpath('jars/iMqttClient.jar')
 addpath(genpath(pwd))
 
 % create mqtt interface object
-mqttinterface = MqttInterface('matlab_mqtt_node', 'localhost', 1883);
+mqttinterface = MqttInterface('matlab_mqtt_node', 'localhost', 1883, 10); % set maxInflight=10
+% mqttinterface = MqttInterface('matlab_mqtt_node', 'localhost', 1883); % maxInflight will be set to 1000
 
-% add publisher to a topic
-pub_topic = 'pub_topic_name';
-mqttinterface.add_publisher(pub_topic);
+% subscribe to a topic
+sub_topic_1 = 'sub_topic_1';
+sub_topic_2 = 'sub_topic_2';
+mqttinterface.subscribe(sub_topic_1, 1); % set qos=1
+mqttinterface.subscribe(sub_topic_2); % qos will be set to 0
 
-% add subscriber to a topic
-sub_topic = 'sub_topic_name';
-mqttinterface.add_subscriber(sub_topic);
-
-% connect to the mqtt broker
-mqttinterface.connect();
-
-% receive a message from sub_topic
-sub_topic_msg = mqttinterface.receive(sub_topic);
-
-% publish a message to pub_topic
-pub_topic_msg = 'pub_topic_msg';
-mqttinterface.send(pub_topic, pub_topic_msg);
+while true
+    % receive a message from sub_topic
+    sub_topic_msg_1 = mqttinterface.receive(sub_topic_1);
+    sub_topic_msg_2 = mqttinterface.receive(sub_topic_2);
+    disp(['received msg: ', sub_topic_msg_1, ' from ', sub_topic_1])
+    disp(['received msg: ', sub_topic_msg_2, ' from ', sub_topic_2])
+    
+    % publish a message to pub_topic
+    mqttinterface.send('pub_topic_1', 'pub_msg_1', 1); % set qos=1
+    mqttinterface.send('pub_topic_2', 'pub_msg_2'); % qos will be set to 0
+    
+    pause(1)
+end
