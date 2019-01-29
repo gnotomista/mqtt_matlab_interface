@@ -29,7 +29,7 @@ classdef MqttInterface < handle
             err_flag = false;
             err = '';
             try
-                recv_msg = obj.imqtt.getMessage(topic);
+                recv_msg = char(obj.imqtt.getMessage(topic));
             catch e
                 err_flag = true;
                 err = e.message;
@@ -47,6 +47,20 @@ classdef MqttInterface < handle
             end
         end
         function [err_flag, err] = send(obj, topic, msg, qos)
+            err_flag = false;
+            err = '';
+            try
+                if nargin < 4
+                    obj.imqtt.sendMessage(topic, msg)
+                else
+                    obj.imqtt.sendMessage(topic, msg, qos)
+                end
+            catch e
+                err_flag = false;
+                err = e.message;
+            end
+        end
+        function [err_flag, err] = send_json(obj, topic, msg, qos)
             err_flag = false;
             err = '';
             try
