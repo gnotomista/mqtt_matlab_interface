@@ -43,7 +43,7 @@ public class iMqttClient implements MqttCallback {
   }
 
   // send message
-  public void sendMessage(String topic,String payload, int qos) throws MqttException {
+  public void sendMessage(String topic, String payload, int qos) throws MqttException {
     MqttMessage message = new MqttMessage(payload.getBytes());
     message.setQos(qos);
     this.client.publish(topic, message);
