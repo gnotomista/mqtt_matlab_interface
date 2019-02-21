@@ -2,12 +2,14 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.Map;
 import java.util.HashMap;
+import java.time.Instant;
 
 public class iMqttClient implements MqttCallback {
 
   private MqttClient client;
   Map<String, String> mqttMessage = new HashMap<String, String>();
-
+  long[] unixTime = {0, 0};
+  
   // constructor
   public iMqttClient(String clientId, String ip, String port, int maxInflight) throws MqttException {
     MqttConnectOptions conOpt = new MqttConnectOptions();
@@ -73,6 +75,12 @@ public class iMqttClient implements MqttCallback {
   // message arrived
   public void messageArrived(String topic, MqttMessage message) throws MqttException {
     mqttMessage.put(topic, new String(message.getPayload()));
+    this.unixTime[0] = Instant.now().getEpochSecond();
+    this.unixTime[1] = Instant.now().getNano();
+  }
+  
+  public long[] getMessageArrivalTime() {
+      return this.unixTime;   
   }
 
   // shutdown
