@@ -8,7 +8,7 @@ public class iMqttClient implements MqttCallback {
 
   private MqttClient client;
   Map<String, String> mqttMessage = new HashMap<String, String>();
-  long[] unixTime = {0, 0};
+  Map<String, long[]> unixTime = new HashMap<String, long[]>();
   
   // constructor
   public iMqttClient(String clientId, String ip, String port, int maxInflight) throws MqttException {
@@ -74,13 +74,12 @@ public class iMqttClient implements MqttCallback {
 
   // message arrived
   public void messageArrived(String topic, MqttMessage message) throws MqttException {
-    mqttMessage.put(topic, new String(message.getPayload()));
-    this.unixTime[0] = Instant.now().getEpochSecond();
-    this.unixTime[1] = Instant.now().getNano();
+    this.mqttMessage.put(topic, new String(message.getPayload()));
+    this.unixTime.put(topic, new long[] {Instant.now().getEpochSecond(), Instant.now().getNano()});
   }
   
-  public long[] getMessageArrivalTime() {
-      return this.unixTime;   
+  public long[] getMessageArrivalTime(String topic) {
+      return this.unixTime.get(topic);   
   }
 
   // shutdown

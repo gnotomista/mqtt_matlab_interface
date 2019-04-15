@@ -76,8 +76,8 @@ classdef MqttInterface < handle
             end
         end
         
-        function unix_time_seconds = getMessageArrivalTime(obj)
-            unix_time = obj.imqtt.getMessageArrivalTime();
+        function unix_time_seconds = getMessageArrivalTime(obj, topic)
+            unix_time = obj.imqtt.getMessageArrivalTime(topic);
             unix_time_seconds = double(unix_time(1)) + double(unix_time(2))*1e-9;
         end
     end
