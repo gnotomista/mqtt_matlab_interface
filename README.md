@@ -1,7 +1,7 @@
 # mqtt_matlab_interface
 MATLAB interface to mqtt, based on the [Paho Java client](https://www.eclipse.org/paho/clients/java/)
 
-Bare bones implementation which allows to connect to an mqtt broker (e.g. http://emqtt.io/), publish and subscribe to multiple topics.
+Bare bones implementation which allows to connect to an mqtt broker (e.g. https://www.emqx.io/), publish and subscribe to multiple topics.
 
 Extending functionalities is straightforward:
 1. the java source files in the `src` directory can be modified to add the functionalities one wants
