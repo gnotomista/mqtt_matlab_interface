@@ -1,7 +1,7 @@
 # mqtt_matlab_interface
-MATLAB interface to MQTT, based on the [Paho Java client](https://www.eclipse.org/paho/clients/java/). The latest version of the Java client, packed in `org.eclipse.paho.client.mqttv3-1.2.2.jar` included in the `jars` directory, can be found on [this](https://repo.eclipse.org/content/repositories/paho-releases/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.2.2/) page.
+MATLAB interface to MQTT, based on the [Paho Java client](https://www.eclipse.org/paho/clients/java/). Updated versions of the Java client `org.eclipse.paho.client.mqttv3-1.2.2.jar` included in the `jars` directory can be found on [this](https://repo.eclipse.org/content/repositories/paho-releases/org/eclipse/paho/org.eclipse.paho.client.mqttv3/) page.
 
-Bare bones implementation which allows to connect to a MQTT broker (e.g. EMQ X Broker https://www.emqx.io/products/broker), publish and subscribe to multiple topics.
+Bare bones implementation which allows to connect to a MQTT broker (e.g. EMQ X Broker https://www.emqx.io/products/broker), publish and subscribe to multiple topics. The `MqttInterface` matlab class allows for an easy interface to the basic functionalities of MQTT-based message exchange. Besides strings and JSON messages, it is also possible to directly send and receive MATLAB objects.
 
 Minimal test:
 1. run a MQTT broker (e.g. in the case of EMQ X Broker: in a terminal, `cd emqx_downloaded_folder/bin` and run `./emqx start`)

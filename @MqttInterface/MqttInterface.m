@@ -46,6 +46,17 @@ classdef MqttInterface < handle
                 err = e.message;
             end
         end
+        function [recv_msg, err_flag, err] = receive_bytes(obj, topic)
+            recv_msg = [];
+            err_flag = false;
+            err = '';
+            try
+                recv_msg = getArrayFromByteStream(uint8(char(obj.imqtt.getMessage(topic))));
+            catch e
+                err_flag = true;
+                err = e.message;
+            end
+        end
         function [err_flag, err] = send(obj, topic, msg, qos)
             err_flag = false;
             err = '';
@@ -75,7 +86,22 @@ classdef MqttInterface < handle
                 err = e.message;
             end
         end
-        
+        function [err_flag, err] = send_bytes(obj, topic, msg, qos)
+            err_flag = false;
+            err = '';
+            try
+                s = char(getByteStreamFromArray(msg));
+                if nargin < 4
+                    obj.imqtt.sendMessage(topic, s)
+                else
+                    obj.imqtt.sendMessage(topic, s, qos)
+                end
+            catch e
+                err_flag = false;
+                err = e.message;
+            end
+        end
+
         function unix_time_seconds = getMessageArrivalTime(obj, topic)
             unix_time = obj.imqtt.getMessageArrivalTime(topic);
             unix_time_seconds = double(unix_time(1)) + double(unix_time(2))*1e-9;

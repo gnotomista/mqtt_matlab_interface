@@ -9,7 +9,7 @@ public class iMqttClient implements MqttCallback {
   private MqttClient client;
   Map<String, String> mqttMessage = new HashMap<String, String>();
   Map<String, long[]> unixTime = new HashMap<String, long[]>();
-  
+
   // constructor
   public iMqttClient(String clientId, String ip, String port, int maxInflight) throws MqttException {
     MqttConnectOptions conOpt = new MqttConnectOptions();
@@ -58,6 +58,20 @@ public class iMqttClient implements MqttCallback {
     this.client.publish(topic, message);
   }
 
+  // send message: overload with byte payload
+  public void sendMessage(String topic, byte[] payload, int qos) throws MqttException {
+    MqttMessage message = new MqttMessage(payload);
+    message.setQos(qos);
+    this.client.publish(topic, message);
+  }
+
+  // send message: overload with byte payload and qos=0
+  public void sendMessage(String topic, byte[] payload) throws MqttException {
+    MqttMessage message = new MqttMessage(payload);
+    message.setQos(0);
+    this.client.publish(topic, message);
+  }
+
   // get message
   public String getMessage(String topic) throws MqttException {
     return this.mqttMessage.get(topic);
@@ -77,9 +91,9 @@ public class iMqttClient implements MqttCallback {
     this.mqttMessage.put(topic, new String(message.getPayload()));
     this.unixTime.put(topic, new long[] {Instant.now().getEpochSecond(), Instant.now().getNano()});
   }
-  
+
   public long[] getMessageArrivalTime(String topic) {
-      return this.unixTime.get(topic);   
+      return this.unixTime.get(topic);
   }
 
   // shutdown
